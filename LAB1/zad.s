@@ -131,7 +131,8 @@ movb %bl, wynik(,%esi,1)
 mov $SYSWRITE, %eax
 mov $STDOUT, %ebx
 mov $wynik, %ecx
-mov $text_size, %edx
+# mov $text_size, %edx
+mov %esi, %edx # 0003E170
 int $SYSCALL
 
 

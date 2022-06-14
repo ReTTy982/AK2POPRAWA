@@ -6,87 +6,52 @@ WRITE_NR = 4
 STDOUT = 1
 EXIT_CODE_SUCCESS = 0
 STDIN = 0
-
-num_length = 256
-word_length = 8
-num_words = num_length / word_length
-
-.global _start
-
 .data
-wynik: .space num_length
-liczba: .space num_length
-pierwsza: .space num_length
-druga: .space num_length
-debug: .space num_length
+format: .asciz "%d\n"
+
+.global funkcja
 
 
 
 
-
-_start:
-
+funkcja:
 push %ebp
-movl %esp ,%ebp
-movl $10, %ecx
-
-xor %edx, %edx # licznik petli 
-xor %esi, %esi # indeks wyniku
+mov %esp, %ebp
+mov $5, %edx
 
 
 
-
-
-jeden:
-movl $1, %eax
-movl $1, %ebx
+jeden: # 
+mov $1, %eax
+mov $1, %ebx
+push %eax
 push %ebx
-add %eax, %ebx
-movl %eax, pierwsza
-movl %ebx, druga
-jmp fibb_better
+cmp $0, %edx
+je koniec
 
 
-petla:
-movl pierwsza(, %edx, 8), %eax
-movl druga(, %edx,8), %ebx
-popf
-adc %eax, %ebx
-pushf
-clc
-adc %ebx, wynik(, %edx,8)
-inc %edx
-movl %edx, debug
-cmp $num_words, %edx
-jl petla
-adc $0, wynik(, %edx,8)
-push druga
-push wynik
-pop druga
-
-
-fibb_better:
-xor %edx, %edx
-dec %ecx
-pop pierwsza
-cmp $0, %ecx
-jnz petla
+fibb:
+pop %ebx
+pop %eax
+add %ebx, %eax
+dec %edx
+cmp $0, %edx
+je koniec
+push %eax
+push %ebx
+call fibb
 
 
 
 
 
-mov $WRITE_NR, %eax			
-mov $STDOUT, %ebx			
-mov wynik, %ecx
-mov $num_length, %edx
-int $0x80
 
 
+koniec:
+push %eax
+push $format
+call printf
+call exit
 
-
-mov $EXIT_NR          , %eax
-mov $EXIT_CODE_SUCCESS, %ebx 
-int $0x80
 
 
